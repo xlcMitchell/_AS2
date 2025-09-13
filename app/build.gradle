@@ -29,6 +29,12 @@ android {
 }
 
 dependencies {
+    implementation libs.room.common.jvm
+
+    //---Three dependencies required for Room implementation---//
+    def room_version = "2.5.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
     implementation libs.appcompat
     implementation libs.material
