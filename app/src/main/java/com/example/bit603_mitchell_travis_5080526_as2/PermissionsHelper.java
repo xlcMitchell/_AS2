@@ -7,36 +7,30 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PermissionsHelper {
-    private final AppCompatActivity activity;
-
-    public PermissionsHelper(AppCompatActivity activity){
-        this.activity = activity;
-    }
-
-    public ActivityResultLauncher<String[]> requestLocationPermissions(
+    public static ActivityResultLauncher<String[]> requestLocationPermissions(
+            AppCompatActivity activity,
             Runnable onPreciseGranted,
             Runnable onApproximateGranted,
-            Runnable onDenied
-    ){
+            Runnable onDenied) {
+
         return activity.registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
-                    boolean fineLocationGranted = result.getOrDefault(
-                            Manifest.permission.ACCESS_FINE_LOCATION,false);
-                    boolean coarseLocationGranted = result.getOrDefault(
-                            Manifest.permission.ACCESS_COARSE_LOCATION,false);
+                    boolean fine = Boolean.TRUE.equals(
+                            result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                    boolean coarse = Boolean.TRUE.equals(
+                            result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
 
-                    if (Boolean.TRUE.equals(fineLocationGranted) &&
-                            Boolean.TRUE.equals(coarseLocationGranted)) {
+                    if (fine && coarse) {
                         onPreciseGranted.run();
-                    } else if (Boolean.TRUE.equals(coarseLocationGranted)) {
+                    } else if (coarse) {
                         onApproximateGranted.run();
                     } else {
                         onDenied.run();
                     }
-
                 }
         );
     }
-
 }
+
+
