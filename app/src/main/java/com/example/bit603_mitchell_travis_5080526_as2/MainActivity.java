@@ -16,5 +16,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        //TODO permissions to be requested for Android 10+
+
     }
 }
