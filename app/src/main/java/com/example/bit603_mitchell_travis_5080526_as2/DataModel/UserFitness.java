@@ -17,6 +17,7 @@ public class UserFitness {
     private int email;
     private int steps;
 
+
     public UserFitness(Date date, int email, int steps) {
         this.date = date;
         this.email = email;
