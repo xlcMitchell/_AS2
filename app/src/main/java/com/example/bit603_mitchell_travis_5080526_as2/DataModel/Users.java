@@ -1,12 +1,14 @@
 package com.example.bit603_mitchell_travis_5080526_as2.DataModel;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "users")
 public class Users {
-    @PrimaryKey(autoGenerate= true)
+    @PrimaryKey
+    @NonNull
     private String email;
     @ColumnInfo(name = "first_name")
     private String firstName;
