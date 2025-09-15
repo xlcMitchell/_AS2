@@ -1,6 +1,7 @@
 package com.example.bit603_mitchell_travis_5080526_as2;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         btnLocate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               //TODO start locate me activity
+               Intent intent = new Intent(MainActivity.this,LocateMeActivity.class);
+               startActivity(intent);
             }
         });
 
