@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BIT603_Mitchell_Travis_5080526_AS2</string>
+    <string name="title_activity_locate_me">LocateMeActivity</string>
 </resources>
