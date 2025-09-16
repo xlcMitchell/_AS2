@@ -14,7 +14,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -26,8 +29,8 @@ import com.example.bit603_mitchell_travis_5080526_as2.databinding.ActivityLocate
 public class LocateMeActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private LocationManager locationManager;
+    private FusedLocationProviderClient locationClient; //Class to get users last location
     private static final int LOCATION_PERMISSION_REQUEST = 100;
-
     private GoogleMap mMap;
     private ActivityLocateMeBinding binding;
 
@@ -43,6 +46,7 @@ public class LocateMeActivity extends FragmentActivity implements OnMapReadyCall
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //---Back button click listener---//
         Button backBtn = findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +56,7 @@ public class LocateMeActivity extends FragmentActivity implements OnMapReadyCall
         });
 
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Check permissions
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -87,10 +92,34 @@ public class LocateMeActivity extends FragmentActivity implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         //TODO add users location
-
+        /*
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+         */
+        //Android studio would like to check permission again before checking for last location
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this,"You have not granted permission",Toast.LENGTH_LONG).show();
+            return;
+        }
+                locationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) { //Make sure that last location is not null
+                        LatLng myLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, 15));
+                        mMap.addMarker(new MarkerOptions()
+                                .position(myLatLng)
+                                .title("My location"));
+                    } else {
+                        // Last location is null
+                        Toast.makeText(this, "Location not available yet", Toast.LENGTH_SHORT).show();
+                        //Default location incase last known location is not available
+                        LatLng defaultLocation = new LatLng(-36.8485, 174.7633);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
+                    }
+                });
+
+
     }
 
     @Override
