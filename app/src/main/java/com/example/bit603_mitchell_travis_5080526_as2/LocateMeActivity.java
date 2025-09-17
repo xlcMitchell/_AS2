@@ -92,11 +92,6 @@ public class LocateMeActivity extends FragmentActivity implements OnMapReadyCall
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         //TODO add users location
-        /*
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-         */
         //Android studio would like to check permission again before checking for last location
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this,"You have not granted permission",Toast.LENGTH_LONG).show();
@@ -113,14 +108,12 @@ public class LocateMeActivity extends FragmentActivity implements OnMapReadyCall
                     } else {
                         // Last location is null
                         Toast.makeText(this, "Location not available yet", Toast.LENGTH_SHORT).show();
-                        //Default location incase last known location is not available
+                        //Default location (Auckland) in case last known location is not available
                         LatLng defaultLocation = new LatLng(-36.8485, 174.7633);
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12));
                     }
                 });
-
-
-    }
+       }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {

@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         btnStepCounter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO Start step counter activity
+                Intent intent = new Intent(MainActivity.this,StepCounterActivity.class);
+                startActivity(intent);
             }
         });
     }
