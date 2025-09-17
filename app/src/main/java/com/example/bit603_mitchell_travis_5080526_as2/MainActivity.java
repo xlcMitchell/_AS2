@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        //TODO add database and code to check if registered 
+
         //---Buttons---//
         Button btnProfile = findViewById(R.id.btnProfile);
         Button btnLocate = findViewById(R.id.btnLocate);

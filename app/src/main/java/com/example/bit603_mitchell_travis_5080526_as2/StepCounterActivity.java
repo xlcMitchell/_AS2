@@ -2,6 +2,7 @@ package com.example.bit603_mitchell_travis_5080526_as2;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -22,11 +23,19 @@ import androidx.core.view.WindowInsetsCompat;
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
     private float totalSteps;
+    private int previousTotalSteps;
+    TextView stepsTaken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_step_counter);
+
+        SharedPreferences stepPref = getSharedPreferences("mySteps", MODE_PRIVATE);
+        previousTotalSteps = stepPref.getInt("mySteps",0);
+        stepsTaken = findViewById(R.id.stepsTaken);
+        stepsTaken.setText(String.valueOf(previousTotalSteps));
+
 
         //#---CHECK PERMISSION---#//
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q) {
@@ -43,7 +52,6 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         }else{
             Toast.makeText(this,"Sensor detected", Toast.LENGTH_SHORT).show();
             manager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_UI);
-
         }
 
     }
@@ -55,17 +63,14 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        TextView stepsTaken = findViewById(R.id.stepsTaken);
         totalSteps = event.values[0];
-        Log.d("STEPDEBUGGING","STEP TAKEN");
-        //steps++;
+        Log.d("STEPDEBUGGING","Total Steps=" + totalSteps);
+        int currentSteps = (int) totalSteps - previousTotalSteps;
+        stepsTaken.setText(String.valueOf(currentSteps));
 
-        // Current steps are calculated by taking the difference of total steps
-        // and previous steps
-        // int currentSteps = (int) totalSteps - (int) previousTotalSteps;
-
-        // It will show the current steps to the user
-        stepsTaken.setText(String.valueOf(totalSteps));
+        // Save steps to shared preference
+        SharedPreferences stepPref = getSharedPreferences("mySteps", MODE_PRIVATE);
+        stepPref.edit().putInt("lastSteps", (int) totalSteps).apply();
 
     }
 }
