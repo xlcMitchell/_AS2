@@ -39,6 +39,12 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         dailyStepCount = findViewById(R.id.dailyStepCount);
         realTimeText = findViewById(R.id.realTimeSteps);
 
+        //Update daily steps and real time steps to latest known value
+        SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
+        realTimeSteps = prefs.getInt("dailyTotal",0);
+        realTimeText.setText(String.valueOf(realTimeSteps));
+        dailyStepCount.setText(String.valueOf(realTimeSteps));
+
 
         //#---CHECK PERMISSION---#//
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q) {
@@ -70,21 +76,28 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             float totalSteps = event.values[0]; //Retrieve total steps since last reboot
-            Log.d("STEPDEBUGGING","Total Steps=" + totalSteps);
             //check for new date and create a new starting point if it is a new day
             checkNewDate((int) totalSteps);
             SharedPreferences startingStepsPref = getSharedPreferences("mySteps",MODE_PRIVATE);
             int startingStep = startingStepsPref.getInt("start",0);
             int currentDailySteps = (int) totalSteps - startingStep;
             dailyStepCount.setText(String.valueOf(currentDailySteps));
+
+            //If the steps are not up to date for example if we start the app and
+            //it is counting from the previous step count because TYPE_STEP_COUNTER
+            //doesn't update as frequently
+            if(currentDailySteps != realTimeSteps){
+                realTimeSteps = currentDailySteps;
+            }
+            //saving latest step count total
+            startingStepsPref.edit()
+                    .putInt("dailyTotal",currentDailySteps)
+                    .apply();
         }else if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
                 Log.d("STEPDEBUGGING", "REAL TIME STEPS UPDATE");
                 realTimeSteps++;
                 realTimeText.setText(String.valueOf(realTimeSteps));
-
         }
-
-
     }
     private void checkNewDate(int total){
         SharedPreferences stepPref = getSharedPreferences("mySteps",MODE_PRIVATE);
