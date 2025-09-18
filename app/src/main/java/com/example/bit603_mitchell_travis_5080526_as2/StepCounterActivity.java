@@ -26,22 +26,18 @@ import java.util.Locale;
 
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
-    private float totalSteps;
-    private int previousTotalSteps;
-    TextView stepsTaken,dailyStepCount;
+    TextView dailyStepCount,realTimeText;
+    int realTimeSteps;
+
+    int dailyStepTotal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_step_counter);
 
-        SharedPreferences stepPref = getSharedPreferences("mySteps", MODE_PRIVATE);
-        previousTotalSteps = stepPref.getInt("lastSteps",0);
-        Log.d("STEPDEBUGGING", "previousTotalSteps = " + previousTotalSteps);
-
-        stepsTaken = findViewById(R.id.stepsTaken);
         dailyStepCount = findViewById(R.id.dailyStepCount);
-        stepsTaken.setText(String.valueOf(previousTotalSteps));
+        realTimeText = findViewById(R.id.realTimeSteps);
 
 
         //#---CHECK PERMISSION---#//
@@ -54,6 +50,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor stepDetector = manager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        manager.registerListener(this, stepDetector, SensorManager.SENSOR_DELAY_NORMAL);
         if(sensor == null){
             Toast.makeText(this,"No sensor detected on this device", Toast.LENGTH_SHORT).show();
         }else{
@@ -70,20 +68,22 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        totalSteps = event.values[0];
-        Log.d("STEPDEBUGGING","Total Steps=" + totalSteps);
-        int currentSteps = (int) totalSteps - previousTotalSteps;
-        stepsTaken.setText(String.valueOf(currentSteps));
-        // Save steps to shared preference
-        SharedPreferences stepPref = getSharedPreferences("mySteps", MODE_PRIVATE);
-        stepPref.edit().putInt("lastSteps", (int) totalSteps).apply();
+        if(event.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+            float totalSteps = event.values[0]; //Retrieve total steps since last reboot
+            Log.d("STEPDEBUGGING","Total Steps=" + totalSteps);
+            //check for new date and create a new starting point if it is a new day
+            checkNewDate((int) totalSteps);
+            SharedPreferences startingStepsPref = getSharedPreferences("mySteps",MODE_PRIVATE);
+            int startingStep = startingStepsPref.getInt("start",0);
+            int currentDailySteps = (int) totalSteps - startingStep;
+            dailyStepCount.setText(String.valueOf(currentDailySteps));
+        }else if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
+                Log.d("STEPDEBUGGING", "REAL TIME STEPS UPDATE");
+                realTimeSteps++;
+                realTimeText.setText(String.valueOf(realTimeSteps));
 
-        //check for new date
-        checkNewDate((int) totalSteps);
-        SharedPreferences startingStepsPref = getSharedPreferences("start",MODE_PRIVATE);
-        int startingStep = startingStepsPref.getInt("start",0);
-        int currentDailySteps = (int) totalSteps - startingStep;
-        dailyStepCount.setText(String.valueOf(currentDailySteps));
+        }
+
 
     }
     private void checkNewDate(int total){
@@ -95,7 +95,9 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             stepPref.edit()
                     .putInt("start",total)
                     .putString("date",currentDate)
+                    .putInt("real",0)
                     .apply();
+            realTimeSteps = 0; //reset steps in real time
         }
     }
 }
