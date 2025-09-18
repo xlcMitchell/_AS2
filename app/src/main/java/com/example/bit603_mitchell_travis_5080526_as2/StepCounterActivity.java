@@ -11,6 +11,7 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     TextView dailyStepCount,realTimeText;
     int realTimeSteps;
 
+    ProgressBar progress;
+
     int dailyStepTotal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +41,14 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         dailyStepCount = findViewById(R.id.dailyStepCount);
         realTimeText = findViewById(R.id.realTimeSteps);
+        progress = findViewById(R.id.progressBarHorizontal);
 
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         realTimeSteps = prefs.getInt("dailyTotal",0);
         realTimeText.setText(String.valueOf(realTimeSteps));
         dailyStepCount.setText(String.valueOf(realTimeSteps));
+        progress.setProgress(realTimeSteps);
 
 
         //#---CHECK PERMISSION---#//
@@ -82,6 +87,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             int startingStep = startingStepsPref.getInt("start",0);
             int currentDailySteps = (int) totalSteps - startingStep;
             dailyStepCount.setText(String.valueOf(currentDailySteps));
+            progress.setProgress(currentDailySteps); //update progress bar
 
             //If the steps are not up to date for example if we start the app and
             //it is counting from the previous step count because TYPE_STEP_COUNTER
