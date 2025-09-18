@@ -20,11 +20,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
     private float totalSteps;
     private int previousTotalSteps;
-    TextView stepsTaken;
+    TextView stepsTaken,dailyStepCount;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,8 +36,11 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         setContentView(R.layout.activity_step_counter);
 
         SharedPreferences stepPref = getSharedPreferences("mySteps", MODE_PRIVATE);
-        previousTotalSteps = stepPref.getInt("mySteps",0);
+        previousTotalSteps = stepPref.getInt("lastSteps",0);
+        Log.d("STEPDEBUGGING", "previousTotalSteps = " + previousTotalSteps);
+
         stepsTaken = findViewById(R.id.stepsTaken);
+        dailyStepCount = findViewById(R.id.dailyStepCount);
         stepsTaken.setText(String.valueOf(previousTotalSteps));
 
 
@@ -67,10 +74,28 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         Log.d("STEPDEBUGGING","Total Steps=" + totalSteps);
         int currentSteps = (int) totalSteps - previousTotalSteps;
         stepsTaken.setText(String.valueOf(currentSteps));
-
         // Save steps to shared preference
         SharedPreferences stepPref = getSharedPreferences("mySteps", MODE_PRIVATE);
         stepPref.edit().putInt("lastSteps", (int) totalSteps).apply();
 
+        //check for new date
+        checkNewDate((int) totalSteps);
+        SharedPreferences startingStepsPref = getSharedPreferences("start",MODE_PRIVATE);
+        int startingStep = startingStepsPref.getInt("start",0);
+        int currentDailySteps = (int) totalSteps - startingStep;
+        dailyStepCount.setText(String.valueOf(currentDailySteps));
+
+    }
+    private void checkNewDate(int total){
+        SharedPreferences stepPref = getSharedPreferences("mySteps",MODE_PRIVATE);
+        String savedDate = stepPref.getString("date","");
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        if(!savedDate.equals(currentDate)){
+            stepPref.edit()
+                    .putInt("start",total)
+                    .putString("date",currentDate)
+                    .apply();
+        }
     }
 }
