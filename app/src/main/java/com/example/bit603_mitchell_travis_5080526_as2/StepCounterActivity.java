@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,12 +15,13 @@ import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +33,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     int realTimeSteps;
 
     ProgressBar progress;
+    CircularProgressBar circleProgress;
 
     int dailyStepTotal;
     @Override
@@ -42,6 +45,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         dailyStepCount = findViewById(R.id.dailyStepCount);
         realTimeText = findViewById(R.id.realTimeSteps);
         progress = findViewById(R.id.progressBarHorizontal);
+        circleProgress = findViewById(R.id.circularProgressBar);
 
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
@@ -49,6 +53,14 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         realTimeText.setText(String.valueOf(realTimeSteps));
         dailyStepCount.setText(String.valueOf(realTimeSteps));
         progress.setProgress(realTimeSteps);
+
+        circleProgress.setProgressMax(10000); // Goal
+        circleProgress.setProgress(realTimeSteps); // current steps
+        circleProgress.setProgressBarWidth(14f);
+        circleProgress.setBackgroundProgressBarWidth(12f);
+        circleProgress.setProgressBarColor(Color.GREEN);
+        circleProgress.setBackgroundProgressBarColor(Color.GRAY);
+        circleProgress.setProgressWithAnimation(5327f, 1000L); // 1 second animation
 
 
         //#---CHECK PERMISSION---#//
