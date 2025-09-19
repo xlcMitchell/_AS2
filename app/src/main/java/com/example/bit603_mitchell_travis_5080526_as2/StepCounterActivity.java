@@ -42,26 +42,24 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_step_counter);
 
-        dailyStepCount = findViewById(R.id.dailyStepCount);
+        //dailyStepCount = findViewById(R.id.dailyStepCount);
         realTimeText = findViewById(R.id.realTimeSteps);
-        progress = findViewById(R.id.progressBarHorizontal);
+        //progress = findViewById(R.id.progressBarHorizontal);
         circleProgress = findViewById(R.id.circularProgressBar);
 
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         realTimeSteps = prefs.getInt("dailyTotal",0);
         realTimeText.setText(String.valueOf(realTimeSteps));
-        dailyStepCount.setText(String.valueOf(realTimeSteps));
-        progress.setProgress(realTimeSteps);
+        //dailyStepCount.setText(String.valueOf(realTimeSteps));
+        //progress.setProgress(realTimeSteps);
 
         circleProgress.setProgressMax(10000); // Goal
         circleProgress.setProgress(realTimeSteps); // current steps
-        circleProgress.setProgressBarWidth(14f);
+        circleProgress.setProgressBarWidth(20f);
         circleProgress.setBackgroundProgressBarWidth(12f);
         circleProgress.setProgressBarColor(Color.GREEN);
         circleProgress.setBackgroundProgressBarColor(Color.GRAY);
-        circleProgress.setProgressWithAnimation(5327f, 1000L); // 1 second animation
-
 
         //#---CHECK PERMISSION---#//
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q) {
@@ -69,8 +67,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                     != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 1);
             }
-        }
 
+        //#---CREATE AND REGISTER SENSOR MANAGER---#//
         manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Sensor stepDetector = manager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
@@ -81,8 +79,10 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             Toast.makeText(this,"Sensor detected", Toast.LENGTH_SHORT).show();
             manager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_UI);
         }
+        //#---END OF SENSOR MANAGER---#//
 
-    }
+
+    }}
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -98,9 +98,9 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             SharedPreferences startingStepsPref = getSharedPreferences("mySteps",MODE_PRIVATE);
             int startingStep = startingStepsPref.getInt("start",0);
             int currentDailySteps = (int) totalSteps - startingStep;
-            dailyStepCount.setText(String.valueOf(currentDailySteps));
-            progress.setProgress(currentDailySteps); //update progress bar
-
+            //dailyStepCount.setText(String.valueOf(currentDailySteps));
+            //progress.setProgress(currentDailySteps); //update progress bar
+            circleProgress.setProgressWithAnimation(currentDailySteps, 1000L);
             //If the steps are not up to date for example if we start the app and
             //it is counting from the previous step count because TYPE_STEP_COUNTER
             //doesn't update as frequently
@@ -112,7 +112,6 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                     .putInt("dailyTotal",currentDailySteps)
                     .apply();
         }else if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
-                Log.d("STEPDEBUGGING", "REAL TIME STEPS UPDATE");
                 realTimeSteps++;
                 realTimeText.setText(String.valueOf(realTimeSteps));
         }
