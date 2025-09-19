@@ -30,7 +30,7 @@ import java.util.Locale;
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
     TextView dailyStepCount,realTimeText;
-    int realTimeSteps;
+    int realTimeSteps,goal,currentDailySteps;
 
     ProgressBar progress;
     CircularProgressBar circleProgress;
@@ -51,10 +51,11 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         realTimeSteps = prefs.getInt("dailyTotal",0);
         realTimeText.setText(String.valueOf(realTimeSteps));
+        goal = 1000;
         //dailyStepCount.setText(String.valueOf(realTimeSteps));
         //progress.setProgress(realTimeSteps);
 
-        circleProgress.setProgressMax(10000); // Goal
+        circleProgress.setProgressMax(goal); // Goal
         circleProgress.setProgress(realTimeSteps); // current steps
         circleProgress.setProgressBarWidth(20f);
         circleProgress.setBackgroundProgressBarWidth(12f);
@@ -93,11 +94,11 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             float totalSteps = event.values[0]; //Retrieve total steps since last reboot
-            //check for new date and create a new starting point if it is a new day
-            checkNewDate((int) totalSteps);
+            checkNewDate((int) totalSteps);  //Set new starting point if it is a new day
             SharedPreferences startingStepsPref = getSharedPreferences("mySteps",MODE_PRIVATE);
             int startingStep = startingStepsPref.getInt("start",0);
-            int currentDailySteps = (int) totalSteps - startingStep;
+            currentDailySteps = (int) totalSteps - startingStep;
+            checkGoalReached();
             //dailyStepCount.setText(String.valueOf(currentDailySteps));
             //progress.setProgress(currentDailySteps); //update progress bar
             circleProgress.setProgressWithAnimation(currentDailySteps, 1000L);
@@ -114,6 +115,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         }else if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
                 realTimeSteps++;
                 realTimeText.setText(String.valueOf(realTimeSteps));
+                checkGoalReached();
         }
     }
     private void checkNewDate(int total){
@@ -130,4 +132,12 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             realTimeSteps = 0; //reset steps in real time
         }
     }
+
+    private void checkGoalReached(){
+        if(currentDailySteps >= goal || realTimeSteps >= goal){
+            Toast.makeText(this,"Congratulations! You reached your goal!",Toast.LENGTH_LONG).show();
+        }
+    }
+    //TODO create method to check if goal is reached
+    //TODO create array for past 7 days steps
 }
