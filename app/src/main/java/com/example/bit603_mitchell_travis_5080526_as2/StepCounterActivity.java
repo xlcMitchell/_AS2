@@ -31,6 +31,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     private SensorManager manager;
     TextView dailyStepCount,realTimeText;
     int realTimeSteps,goal,currentDailySteps;
+    String weeklySteps;
 
     ProgressBar progress;
     CircularProgressBar circleProgress;
@@ -50,6 +51,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         realTimeSteps = prefs.getInt("dailyTotal",0);
+        weeklySteps = prefs.getString("weeklySteps","0,0,0,0,0,0,0");
         realTimeText.setText(String.valueOf(realTimeSteps));
         goal = 1000;
         //dailyStepCount.setText(String.valueOf(realTimeSteps));
@@ -92,6 +94,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
+        //----Logic for the TYPE_STEP_COUNTER----//
         if(event.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
             float totalSteps = event.values[0]; //Retrieve total steps since last reboot
             checkNewDate((int) totalSteps);  //Set new starting point if it is a new day
@@ -112,6 +116,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             startingStepsPref.edit()
                     .putInt("dailyTotal",currentDailySteps)
                     .apply();
+
+            //----Logic for the TYPE_STEP_DETECTOR----//
         }else if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
                 realTimeSteps++;
                 realTimeText.setText(String.valueOf(realTimeSteps));
@@ -145,6 +151,39 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                     .apply();
         }
     }
-    //TODO create method to check if goal is reached
-    //TODO create array for past 7 days steps
+
+    //Function to convert int array to string for SharedPrefs
+    private void arrayToString(int [] array){
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i < array.length; i++){
+            sb.append(array[i]);
+            if(i < array.length - 1)
+                sb.append(","); //add a comma in between except last value
+        }
+    }
+    //TODO Function that will convert string to int array
+    private int [] stringToArray(String steps){
+        String [] dailySteps = steps.split(",");
+        int [] arr = new int[dailySteps.length];
+        for(int i=0; i < dailySteps.length; i++){
+            int val = Integer.parseInt(dailySteps[i]);
+            arr[i] = val;
+
+        }
+        return arr;
+    }
+
+    //TODO Function that will update array in shared preference
+    //Current day steps for the graph will use realTimeSteps or
+    //Array will need to be available in onCreate method
+    //possibly call function in onCreate() to create graph
+    //Will I store the array as a class variable??
+    //currentDailySteps to update in real time
+    private void updateArray(){
+        //Retrieve index to track current day from sharedPreference
+        //use modulo to add to current index
+        //get shared pref string and convert to array
+        //then add new value at the index
+        //then convert back to string and store in shared pref
+    }
 }
