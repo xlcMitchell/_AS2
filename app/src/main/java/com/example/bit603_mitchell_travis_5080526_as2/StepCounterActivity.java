@@ -78,7 +78,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             Toast.makeText(this,"No sensor detected on this device", Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(this,"Sensor detected", Toast.LENGTH_SHORT).show();
-            manager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_UI);
+            manager.registerListener(this,sensor,SensorManager.SENSOR_DELAY_FASTEST);
         }
         //#---END OF SENSOR MANAGER---#//
 
@@ -127,6 +127,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             stepPref.edit()
                     .putInt("start",total)
                     .putString("date",currentDate)
+                    .putBoolean("msgShow",false)
                     .putInt("real",0)
                     .apply();
             realTimeSteps = 0; //reset steps in real time
@@ -134,8 +135,14 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     }
 
     private void checkGoalReached(){
+        SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
+        if(prefs.getBoolean("msgShown",false))
+            return;
         if(currentDailySteps >= goal || realTimeSteps >= goal){
             Toast.makeText(this,"Congratulations! You reached your goal!",Toast.LENGTH_LONG).show();
+            prefs.edit()
+                    .putBoolean("msgShown",true)
+                    .apply();
         }
     }
     //TODO create method to check if goal is reached
