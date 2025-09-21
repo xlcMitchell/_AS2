@@ -59,10 +59,11 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         realTimeSteps = prefs.getInt("dailyTotal",0);
-        weeklySteps = prefs.getString("weeklySteps","0,0,0,0,0,0,0");
+        weeklySteps = prefs.getString("weeklySteps","500,1000,1200,1400,1700,800,900");
         int [] weeklyStepsArray = stringToArray(weeklySteps);
         realTimeText.setText(String.valueOf(realTimeSteps));
         stepsSinceAppStart = 0;
+        newDate(); //update real time steps
         goal = 1000;
         goalText.setText("Goal: " + String.valueOf(goal) + "steps");
 
@@ -141,15 +142,25 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         String savedDate = stepPref.getString("date","");
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-        if(!savedDate.equals(currentDate)){
-            stepPref.edit()
-                    .putInt("start",total - stepsSinceAppStart)
-                    .putString("date",currentDate)
-                    .putBoolean("msgShow",false)
-                    .putInt("real",0)
-                    .apply();
+            if(!savedDate.equals(currentDate)){
+                updateArray(); //update the array to store the last days steps
+                stepPref.edit()
+                        .putInt("start",total - stepsSinceAppStart)
+                        .putString("date",currentDate)
+                        .putBoolean("msgShow",false)
+                        .putInt("real",0)
+                        .apply();
             realTimeSteps = 0; //reset steps in real time
-            updateArray(); //update the array to store the last days steps
+            }
+    }
+
+    //function to update real time steps when  user first opens app on a new day
+    private void newDate(){
+        SharedPreferences stepPref = getSharedPreferences("mySteps",MODE_PRIVATE);
+        String savedDate = stepPref.getString("date","");
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        if(!savedDate.equals(currentDate)){
+            realTimeSteps = 0; //reset steps in real time
         }
     }
 
@@ -188,13 +199,14 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         int currentIndex = prefs.getInt("index",0);
         int newIndex = (currentIndex + 1) % 7; //should increase to 7 and go back to 0
-        String arrString = prefs.getString("weeklySteps","0,0,0,0,0,0,0");
+        String arrString = prefs.getString("weeklySteps","500,1000,1200,1400,1700,800,900");
         int [] intArr = stringToArray(arrString);
         intArr[currentIndex] = currentDailySteps;
         prefs.edit()
                 .putString("weeklySteps",arrayToString(intArr))
                 .putInt("index",newIndex)
                 .apply();
+
     }
 
     private void populateChart(int[] weeklySteps, int index) {
