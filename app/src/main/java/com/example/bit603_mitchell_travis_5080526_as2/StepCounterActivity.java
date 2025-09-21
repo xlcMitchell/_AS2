@@ -37,7 +37,7 @@ import java.util.Locale;
 
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
-    TextView dailyStepCount,realTimeText;
+    TextView goalComplete,realTimeText,goalText;
     int realTimeSteps,goal,currentDailySteps,stepsSinceAppStart;
     String weeklySteps;
 
@@ -53,6 +53,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         realTimeText = findViewById(R.id.realTimeSteps);
         circleProgress = findViewById(R.id.circularProgressBar);
+        goalComplete = findViewById(R.id.goalComplete);
+        goalText = findViewById(R.id.goalText);
 
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
@@ -62,6 +64,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         realTimeText.setText(String.valueOf(realTimeSteps));
         stepsSinceAppStart = 0;
         goal = 1000;
+        goalText.setText("Goal: " + String.valueOf(goal) + "steps");
 
 
         circleProgress.setProgressMax(goal); // Goal
@@ -151,14 +154,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     }
 
     private void checkGoalReached(){
-        SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
-        if(prefs.getBoolean("msgShown",false))
-            return;
         if(currentDailySteps >= goal || realTimeSteps >= goal){
-            Toast.makeText(this,"Congratulations! You reached your goal!",Toast.LENGTH_LONG).show();
-            prefs.edit()
-                    .putBoolean("msgShown",true)
-                    .apply();
+            goalComplete.setText("Congratulations! Goal Reached");
         }
     }
 
@@ -206,10 +203,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         ArrayList<BarEntry> entries = new ArrayList<>();
         ArrayList<String> labels = new ArrayList<>();
 
-        // Days of the week
-        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-        // Today’s slot in the circular buffer
+        // Today’s slot in the circular buffer because index is one day ahead
+        //adding weeklysteps.length ensures number stays positive
         int todayIndex = (index - 1 + weeklySteps.length) % weeklySteps.length;
 
         // Fill bars in chronological order, ending at today
@@ -221,7 +216,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             if (i == weeklySteps.length - 1) {
                 labels.add("Today");
             } else {
-                labels.add(days[arrayIndex]);
+                labels.add("");
             }
         }
 

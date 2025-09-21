@@ -19,59 +19,30 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-    <!--
-    <ProgressBar
-        android:id="@+id/progressBarHorizontal"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="50dp"
-        android:max="1000"
-        android:progress="10"
-        android:progressTint="@color/myGreen"
-        app:layout_constraintWidth_percent="0.8"
+    <TextView
+        android:id="@+id/goalComplete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/goalText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/goalText"/>
-   -->
+        />
+
     <com.mikhaellopez.circularprogressbar.CircularProgressBar
         android:id="@+id/circularProgressBar"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_marginTop="60dp"
-        app:layout_constraintTop_toTopOf="@+id/goalText"
+        app:layout_constraintTop_toTopOf="@+id/goalComplete"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-  <!--
-    <TextView
-        android:id="@+id/dailySteps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:layout_marginTop="90dp"
-        android:layout_marginEnd="8dp"
-        android:textSize="45sp"
-        android:layout_marginStart="8dp"
-        android:text="Daily Steps"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/progressBarHorizontal" />
 
-    <TextView
-        android:id="@+id/dailyStepCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="8dp"
-        android:textSize="37sp"
-        android:layout_marginStart="8dp"
-        android:text="0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dailySteps" />
-    -->
     <TextView
         android:id="@+id/realTime"
         android:layout_width="wrap_content"
