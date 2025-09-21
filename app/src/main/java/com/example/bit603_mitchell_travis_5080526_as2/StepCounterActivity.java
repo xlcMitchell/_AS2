@@ -21,16 +21,24 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
     TextView dailyStepCount,realTimeText;
-    int realTimeSteps,goal,currentDailySteps;
+    int realTimeSteps,goal,currentDailySteps,stepsSinceAppStart;
     String weeklySteps;
 
     ProgressBar progress;
@@ -43,19 +51,18 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_step_counter);
 
-        //dailyStepCount = findViewById(R.id.dailyStepCount);
         realTimeText = findViewById(R.id.realTimeSteps);
-        //progress = findViewById(R.id.progressBarHorizontal);
         circleProgress = findViewById(R.id.circularProgressBar);
 
         //Update daily steps and real time steps to latest known value
         SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
         realTimeSteps = prefs.getInt("dailyTotal",0);
         weeklySteps = prefs.getString("weeklySteps","0,0,0,0,0,0,0");
+        int [] weeklyStepsArray = stringToArray(weeklySteps);
         realTimeText.setText(String.valueOf(realTimeSteps));
+        stepsSinceAppStart = 0;
         goal = 1000;
-        //dailyStepCount.setText(String.valueOf(realTimeSteps));
-        //progress.setProgress(realTimeSteps);
+
 
         circleProgress.setProgressMax(goal); // Goal
         circleProgress.setProgress(realTimeSteps); // current steps
@@ -63,6 +70,8 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         circleProgress.setBackgroundProgressBarWidth(12f);
         circleProgress.setProgressBarColor(Color.GREEN);
         circleProgress.setBackgroundProgressBarColor(Color.GRAY);
+
+        populateChart(weeklyStepsArray,prefs.getInt("index",0)); //add past 7 days to chart
 
         //#---CHECK PERMISSION---#//
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.Q) {
@@ -97,14 +106,13 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         //----Logic for the TYPE_STEP_COUNTER----//
         if(event.sensor.getType() == Sensor.TYPE_STEP_COUNTER){
+            Log.d("STEP_COUNTER","TYPE_STEP_COUNTER");
             float totalSteps = event.values[0]; //Retrieve total steps since last reboot
             checkNewDate((int) totalSteps);  //Set new starting point if it is a new day
             SharedPreferences startingStepsPref = getSharedPreferences("mySteps",MODE_PRIVATE);
             int startingStep = startingStepsPref.getInt("start",0);
             currentDailySteps = (int) totalSteps - startingStep;
             checkGoalReached();
-            //dailyStepCount.setText(String.valueOf(currentDailySteps));
-            //progress.setProgress(currentDailySteps); //update progress bar
             circleProgress.setProgressWithAnimation(currentDailySteps, 1000L);
             //If the steps are not up to date for example if we start the app and
             //it is counting from the previous step count because TYPE_STEP_COUNTER
@@ -120,6 +128,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             //----Logic for the TYPE_STEP_DETECTOR----//
         }else if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
                 realTimeSteps++;
+                stepsSinceAppStart++;
                 realTimeText.setText(String.valueOf(realTimeSteps));
                 checkGoalReached();
         }
@@ -131,12 +140,13 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         if(!savedDate.equals(currentDate)){
             stepPref.edit()
-                    .putInt("start",total)
+                    .putInt("start",total - stepsSinceAppStart)
                     .putString("date",currentDate)
                     .putBoolean("msgShow",false)
                     .putInt("real",0)
                     .apply();
             realTimeSteps = 0; //reset steps in real time
+            updateArray(); //update the array to store the last days steps
         }
     }
 
@@ -153,15 +163,17 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     }
 
     //Function to convert int array to string for SharedPrefs
-    private void arrayToString(int [] array){
+    private String arrayToString(int [] array){
         StringBuilder sb = new StringBuilder();
         for(int i=0; i < array.length; i++){
             sb.append(array[i]);
             if(i < array.length - 1)
                 sb.append(","); //add a comma in between except last value
         }
+        return sb.toString();
+
     }
-    //TODO Function that will convert string to int array
+
     private int [] stringToArray(String steps){
         String [] dailySteps = steps.split(",");
         int [] arr = new int[dailySteps.length];
@@ -173,17 +185,61 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         return arr;
     }
 
-    //TODO Function that will update array in shared preference
-    //Current day steps for the graph will use realTimeSteps or
-    //Array will need to be available in onCreate method
-    //possibly call function in onCreate() to create graph
-    //Will I store the array as a class variable??
-    //currentDailySteps to update in real time
+
     private void updateArray(){
         //Retrieve index to track current day from sharedPreference
-        //use modulo to add to current index
-        //get shared pref string and convert to array
-        //then add new value at the index
-        //then convert back to string and store in shared pref
+        SharedPreferences prefs = getSharedPreferences("mySteps",MODE_PRIVATE);
+        int currentIndex = prefs.getInt("index",0);
+        int newIndex = (currentIndex + 1) % 7; //should increase to 7 and go back to 0
+        String arrString = prefs.getString("weeklySteps","0,0,0,0,0,0,0");
+        int [] intArr = stringToArray(arrString);
+        intArr[currentIndex] = currentDailySteps;
+        prefs.edit()
+                .putString("weeklySteps",arrayToString(intArr))
+                .putInt("index",newIndex)
+                .apply();
+    }
+
+    private void populateChart(int[] weeklySteps, int index) {
+        BarChart barChart = findViewById(R.id.barChart);
+
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> labels = new ArrayList<>();
+
+        // Days of the week
+        String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+        // Today’s slot in the circular buffer
+        int todayIndex = (index - 1 + weeklySteps.length) % weeklySteps.length;
+
+        // Fill bars in chronological order, ending at today
+        for (int i = 0; i < weeklySteps.length; i++) {
+            int arrayIndex = (todayIndex - (weeklySteps.length - 1 - i) + weeklySteps.length) % weeklySteps.length;
+            entries.add(new BarEntry(i, weeklySteps[arrayIndex]));
+
+            // Label last bar as Today
+            if (i == weeklySteps.length - 1) {
+                labels.add("Today");
+            } else {
+                labels.add(days[arrayIndex]);
+            }
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries, "Steps");
+        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setValueTextSize(12f);
+
+        BarData data = new BarData(dataSet);
+        barChart.setData(data);
+
+        // Format X axis
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setGranularity(1f);
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.animateY(1000);
+        barChart.invalidate();
     }
 }
