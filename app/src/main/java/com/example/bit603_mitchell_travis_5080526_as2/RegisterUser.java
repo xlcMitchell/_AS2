@@ -1,5 +1,6 @@
 package com.example.bit603_mitchell_travis_5080526_as2;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,12 +16,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.AppDatabase;
+import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserFitness;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserFitnessDao;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.Users;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UsersDao;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class RegisterUser extends AppCompatActivity {
 
@@ -81,12 +85,24 @@ public class RegisterUser extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }else{
-                    SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyy");
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    Date date = new Date();
+                    SharedPreferences prefs = getSharedPreferences("mySteps", MODE_PRIVATE);
+                    prefs.edit()
+                            .putString("email", email)
+                            .putString("firstName", firstName)
+                            .putString("lastName", lastName)
+                            .putInt("age", Integer.parseInt(ageStr))
+                            .putBoolean("gender", gender)
+                            .putString("goal", goal)
+                            .apply();
                     try{
-                        //TODO ADD SHARED PREFERENCES AND USER FITNESS
+                        //TODO ADD  USER FITNESS
                         Users user = new Users(email,firstName,lastName,Integer.parseInt(ageStr),gender,Integer.parseInt(goal));
+                        UserFitness userFitness = new UserFitness(date,email,Integer.parseInt(goal));
                         long id = usersDao.insertUsers(user);
-                        if(id != -1){
+                        long id1 = userFitnessDao.insertUserFitness(userFitness);
+                        if(id != -1 && id1 != -1){
                             Toast.makeText(getApplicationContext(),"User added!",Toast.LENGTH_SHORT).show();
                             finish();
                         }

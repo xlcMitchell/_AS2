@@ -1,6 +1,5 @@
 package com.example.bit603_mitchell_travis_5080526_as2.DataModel;
 
-import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
@@ -14,11 +13,11 @@ import java.util.Date;
 public class UserFitness {
     @PrimaryKey(autoGenerate = true)
     private Date date;
-    private int email;
+    private String email;
     private int steps;
 
 
-    public UserFitness(Date date, int email, int steps) {
+    public UserFitness(Date date, String email, int steps) {
         this.date = date;
         this.email = email;
         this.steps = steps;
@@ -37,7 +36,7 @@ public class UserFitness {
         return date;
     }
 
-    public int getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -49,7 +48,7 @@ public class UserFitness {
         this.date = date;
     }
 
-    public void setEmail(int email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 

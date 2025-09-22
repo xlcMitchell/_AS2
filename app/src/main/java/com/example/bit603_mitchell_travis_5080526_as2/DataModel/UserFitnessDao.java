@@ -14,7 +14,7 @@ public interface UserFitnessDao {
     List<UserFitness> readAllUserFitness();
 
     @Insert
-    void insertUserFitness(UserFitness userFitness);
+    long insertUserFitness(UserFitness userFitness);
 
     @Update
     void updateUserFitness(UserFitness userFitness);
