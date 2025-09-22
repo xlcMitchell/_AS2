@@ -238,6 +238,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
         BarData data = new BarData(dataSet);
         barChart.setData(data);
+        dataSet.setDrawValues(false);
 
         // Format X axis
         XAxis xAxis = barChart.getXAxis();

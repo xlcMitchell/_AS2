@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -15,7 +16,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.bit603_mitchell_travis_5080526_as2.DataModel.AppDatabase;
+import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UsersDao;
+
 public class MainActivity extends AppCompatActivity {
+    AppDatabase appDatabase;
+    UsersDao usersDao;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
 
     @Override
@@ -45,7 +51,17 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        //TODO add database and code to check if registered 
+        //creating database instance
+        appDatabase = AppDatabase.createDatabaseInstance(this);
+        //getting the student DAO interface to perform CRUD operations
+        usersDao = appDatabase.usersDao();
+
+        if(usersDao.readAllUsers().isEmpty()){
+            Log.d("USERS_DB_CHECK","USER DB EMPTY");
+            Intent intent = new Intent(MainActivity.this,RegisterUser.class);
+            startActivity(intent);
+
+        }
 
         //---Buttons---//
         Button btnProfile = findViewById(R.id.btnProfile);

@@ -14,7 +14,7 @@ public interface UsersDao {
     List<Users> readAllUsers();
 
     @Insert
-    void insertUsers(Users users);
+    long insertUsers(Users users);
 
     @Update
     void updateUsers(Users users);
