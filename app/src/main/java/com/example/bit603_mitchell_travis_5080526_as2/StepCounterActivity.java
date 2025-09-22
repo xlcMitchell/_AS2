@@ -35,16 +35,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+//Step counter is designed assuming the user will open the app at the beginning
+//of each day
+
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
     TextView goalComplete,realTimeText,goalText;
     int realTimeSteps,goal,currentDailySteps,stepsSinceAppStart;
     String weeklySteps;
-
-    ProgressBar progress;
     CircularProgressBar circleProgress;
 
-    int dailyStepTotal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,10 +118,9 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             currentDailySteps = (int) totalSteps - startingStep;
             checkGoalReached();
             circleProgress.setProgressWithAnimation(currentDailySteps, 1000L);
-            //If the steps are not up to date for example if we start the app and
-            //it is counting from the previous step count because TYPE_STEP_COUNTER
-            //doesn't update as frequently
-            if(currentDailySteps != realTimeSteps){
+            updateTodayChart(realTimeSteps);
+
+            if(currentDailySteps != realTimeSteps){ //make sure realTimeSteps is accurate
                 realTimeSteps = currentDailySteps;
             }
             //saving latest step count total
@@ -135,6 +134,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                 stepsSinceAppStart++;
                 realTimeText.setText(String.valueOf(realTimeSteps));
                 checkGoalReached();
+
         }
     }
     private void checkNewDate(int total){
@@ -248,5 +248,21 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         barChart.getAxisRight().setEnabled(false);
         barChart.animateY(1000);
         barChart.invalidate();
+    }
+
+    private void updateTodayChart(int todaySteps) {
+        SharedPreferences prefs = getSharedPreferences("mySteps", MODE_PRIVATE);
+        String arrString = prefs.getString("weeklySteps","500,1000,1200,1400,1700,800,900");
+        int[] intArr = stringToArray(arrString);
+
+        int index = prefs.getInt("index", 0);
+        int todayIndex = (index - 1 + intArr.length) % intArr.length;
+        intArr[todayIndex] = todaySteps;
+
+        prefs.edit()
+                .putString("weeklySteps", arrayToString(intArr))
+                .apply();
+
+        populateChart(intArr, index); // redraw chart with new values
     }
 }
