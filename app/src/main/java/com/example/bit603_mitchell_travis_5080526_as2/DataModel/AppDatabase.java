@@ -9,7 +9,7 @@ import androidx.room.TypeConverters;
 
 @Database(
         entities = {Users.class,UserFitness.class},
-        version = 1
+        version = 3
 )
 @TypeConverters(DataTypeConverter.class)
 
@@ -26,7 +26,9 @@ public abstract class AppDatabase extends RoomDatabase {
             database = Room.databaseBuilder(context.getApplicationContext(),
                     AppDatabase.class,
                     "database"
-            ).allowMainThreadQueries().build();
+            ).allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build();
         }
         return database;
     }

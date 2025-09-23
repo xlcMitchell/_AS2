@@ -17,7 +17,7 @@ public interface UserFitnessDao {
     long insertUserFitness(UserFitness userFitness);
 
     @Update
-    void updateUserFitness(UserFitness userFitness);
+    int updateUserFitness(UserFitness userFitness);
 
     @Delete
     void deleteUserFitness(UserFitness userFitness);

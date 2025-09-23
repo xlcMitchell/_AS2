@@ -42,6 +42,7 @@ public class RegisterUser extends AppCompatActivity {
         appDatabase = AppDatabase.createDatabaseInstance(this);
         //getting the student DAO interface to perform CRUD operations
         usersDao = appDatabase.usersDao();
+        userFitnessDao = appDatabase.userFitnessDao();
 
         // --- EditTextViews ---
         EditText inputEmail = findViewById(R.id.inputEmail);

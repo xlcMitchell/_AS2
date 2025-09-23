@@ -64,7 +64,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         realTimeText.setText(String.valueOf(realTimeSteps));
         stepsSinceAppStart = 0;
         newDate(); //update real time steps
-        goal = 1000;
+        goal = prefs.getInt("goal",100);
         goalText.setText("Goal: " + String.valueOf(goal) + "steps");
 
 

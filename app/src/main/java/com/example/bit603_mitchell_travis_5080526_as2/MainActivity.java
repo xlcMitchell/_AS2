@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         btnProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO start profile activity
+                Intent intent = new Intent(MainActivity.this,UserProfile.class);
+                startActivity(intent);
             }
         });
 
