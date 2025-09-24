@@ -55,5 +55,5 @@
     <string name="back">Back</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
-    <string name="past_7_days">Past 7 days</string>
+    <string name="past_7_days">Past 7 days Total Steps</string>
 </resources>

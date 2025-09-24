@@ -16,8 +16,9 @@
             android:id="@+id/profileTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:text="Register Your Profile"
-            android:textSize="22sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:paddingBottom="16dp"
             android:textColor="@android:color/black" />
@@ -102,7 +103,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Profile"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="28dp"
             android:backgroundTint="@android:color/holo_green_dark"
             android:textColor="@android:color/white" />
 

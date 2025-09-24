@@ -83,6 +83,7 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 updateRecord();
+                finish();
             }
         });
 
@@ -97,6 +98,7 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 deleteRecord();
+                finish();
             }
         });
 
