@@ -9,7 +9,7 @@ import androidx.room.TypeConverters;
 
 @Database(
         entities = {Users.class,UserFitness.class},
-        version = 3
+        version = 4
 )
 @TypeConverters(DataTypeConverter.class)
 

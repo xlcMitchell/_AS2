@@ -93,6 +93,32 @@ public class UserProfile extends AppCompatActivity {
             }
         });
 
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteRecord();
+            }
+        });
+
+    }
+
+    private void deleteRecord(){
+        if (user.isEmpty() || userFitness.isEmpty()) {
+            Toast.makeText(this, "No record to delete!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int result2 = userFitnessDao.deleteUserFitness(userFitness.get(index));
+        int result1 = usersDao.deleteUsers(user.get(index));
+
+        if (result1 > 0 && result2 > 0) {
+            Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
+            user.remove(index);
+            userFitness.remove(index);
+            finish(); //return to main activity
+        } else {
+            Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showRecord(){

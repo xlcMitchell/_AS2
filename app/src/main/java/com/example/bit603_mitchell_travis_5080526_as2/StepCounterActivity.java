@@ -65,7 +65,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         stepsSinceAppStart = 0;
         newDate(); //update real time steps
         goal = prefs.getInt("goal",100);
-        goalText.setText("Goal: " + String.valueOf(goal) + "steps");
+        goalText.setText("Goal: " + String.valueOf(goal) + " steps");
 
 
         circleProgress.setProgressMax(goal); // Goal

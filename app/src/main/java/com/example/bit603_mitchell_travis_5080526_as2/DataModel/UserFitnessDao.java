@@ -20,5 +20,5 @@ public interface UserFitnessDao {
     int updateUserFitness(UserFitness userFitness);
 
     @Delete
-    void deleteUserFitness(UserFitness userFitness);
+    int deleteUserFitness(UserFitness userFitness);
 }

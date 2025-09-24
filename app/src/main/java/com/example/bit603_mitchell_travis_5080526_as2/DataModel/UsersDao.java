@@ -20,5 +20,5 @@ public interface UsersDao {
     int updateUsers(Users users);
 
     @Delete
-    void deleteUsers(Users users);
+    int deleteUsers(Users users);
 }

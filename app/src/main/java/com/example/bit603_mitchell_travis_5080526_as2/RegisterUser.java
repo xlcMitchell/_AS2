@@ -95,7 +95,7 @@ public class RegisterUser extends AppCompatActivity {
                             .putString("lastName", lastName)
                             .putInt("age", Integer.parseInt(ageStr))
                             .putBoolean("gender", gender)
-                            .putString("goal", goal)
+                            .putInt("goal", Integer.parseInt(goal))
                             .apply();
                     try{
                         //TODO ADD  USER FITNESS

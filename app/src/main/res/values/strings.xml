@@ -52,4 +52,8 @@
     <string name="go_back">Go Back</string>
     <string name="edit">Edit</string>
     <string name="user_profile">User Profile</string>
+    <string name="back">Back</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="past_7_days">Past 7 days</string>
 </resources>

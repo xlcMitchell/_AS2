@@ -107,7 +107,7 @@
                 android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/go_back" />
+                android:text="@string/back"/>
 
             <Button
                 android:id="@+id/btnEdit"
@@ -120,16 +120,18 @@
                 android:id="@+id/btnSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
+                android:text="@string/save"
                 android:layout_marginStart="10dp" />
 
-            <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delete"
-                android:layout_marginStart="10dp"
-                android:textColor="@android:color/holo_red_dark" />
+
         </LinearLayout>
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete"
+            android:layout_marginStart="10dp"
+            />
+
     </LinearLayout>
 </ScrollView>
