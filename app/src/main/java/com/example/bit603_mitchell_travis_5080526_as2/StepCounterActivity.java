@@ -118,11 +118,13 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             currentDailySteps = (int) totalSteps - startingStep;
             checkGoalReached();
             circleProgress.setProgressWithAnimation(currentDailySteps, 1000L);
-            updateTodayChart(realTimeSteps);
+
 
             if(currentDailySteps != realTimeSteps){ //make sure realTimeSteps is accurate
                 realTimeSteps = currentDailySteps;
             }
+
+            updateTodayChart(realTimeSteps);
             //saving latest step count total
             startingStepsPref.edit()
                     .putInt("dailyTotal",currentDailySteps)
@@ -145,12 +147,11 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             if(!savedDate.equals(currentDate)){
                 updateArray(); //update the array to store the last days steps
                 stepPref.edit()
-                        .putInt("start",total - stepsSinceAppStart)
+                        .putInt("start",total)
                         .putString("date",currentDate)
                         .putBoolean("msgShow",false)
                         .putInt("real",stepsSinceAppStart)
                         .apply();
-            realTimeSteps = stepsSinceAppStart; //reset steps in real time
             }
     }
 

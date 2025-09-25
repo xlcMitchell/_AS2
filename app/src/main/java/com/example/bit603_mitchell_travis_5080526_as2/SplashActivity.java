@@ -13,6 +13,8 @@ import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -20,10 +22,14 @@ public class SplashActivity extends AppCompatActivity {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+
+
+        AtomicBoolean keepOn = new AtomicBoolean(true);
+        splashScreen.setKeepOnScreenCondition(() -> keepOn.get());
 
         // Delay for 2 seconds then move to next activity
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
             SharedPreferences prefs = getSharedPreferences("mySteps", MODE_PRIVATE);
             boolean hasUser = prefs.contains("email");
             Intent intent;
@@ -31,8 +37,9 @@ public class SplashActivity extends AppCompatActivity {
                 intent = new Intent(this, MainActivity.class);
             } else {
                 intent = new Intent(this, RegisterUser.class);
-            }
+            }keepOn.set(false);
             startActivity(intent);
+            overridePendingTransition(0, 0);
             finish();
         }, 2000);
     }
