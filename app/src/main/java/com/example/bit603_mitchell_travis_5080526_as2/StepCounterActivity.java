@@ -37,6 +37,9 @@ import java.util.Locale;
 
 //Step counter is designed assuming the user will open the app at the beginning
 //of each day
+//STEP COUNTER does not update in real time for my phone so step detector used
+//for in real time updates..
+//STEP COUNTER is used to track throughout the day when user does not have app open
 
 public class StepCounterActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager manager;
@@ -124,7 +127,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                 realTimeSteps = currentDailySteps;
             }
 
-            updateTodayChart(realTimeSteps);
+            updateTodayChart(currentDailySteps);
             //saving latest step count total
             startingStepsPref.edit()
                     .putInt("dailyTotal",currentDailySteps)
@@ -152,6 +155,9 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                         .putBoolean("msgShow",false)
                         .putInt("real",stepsSinceAppStart)
                         .apply();
+
+               currentDailySteps = stepsSinceAppStart; //so currentDaily steps shows steps before type_step_counter event
+               realTimeSteps = currentDailySteps;
             }
     }
 
@@ -162,6 +168,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         if(!savedDate.equals(currentDate)){
             realTimeSteps = 0; //reset steps in real time
+            stepsSinceAppStart = 0;
         }
     }
 
