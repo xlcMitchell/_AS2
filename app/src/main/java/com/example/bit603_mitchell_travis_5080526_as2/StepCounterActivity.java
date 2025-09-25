@@ -148,9 +148,9 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                         .putInt("start",total - stepsSinceAppStart)
                         .putString("date",currentDate)
                         .putBoolean("msgShow",false)
-                        .putInt("real",0)
+                        .putInt("real",stepsSinceAppStart)
                         .apply();
-            realTimeSteps = 0; //reset steps in real time
+            realTimeSteps = stepsSinceAppStart; //reset steps in real time
             }
     }
 

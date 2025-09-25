@@ -75,7 +75,7 @@ public class UserProfile extends AppCompatActivity {
                 editTextAge.setEnabled(true);
                 editTextGoal.setEnabled(true);
                 editTextGender.setEnabled(true);
-                editTextEmail.setEnabled(true);
+
             }
         });
 
@@ -165,6 +165,7 @@ public class UserProfile extends AppCompatActivity {
             user.get(index).setFirstName(fName);
             user.get(index).setLastName(lName);
             user.get(index).setEmail(email);
+            user.get(index).setGender(gender);
 
             //---Update User Fitness---
             userFitness.get(index).setEmail(email);
