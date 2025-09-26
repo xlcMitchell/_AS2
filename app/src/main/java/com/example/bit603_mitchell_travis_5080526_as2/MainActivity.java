@@ -16,8 +16,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.AppDatabase;
+import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserViewModel;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UsersDao;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,12 +59,26 @@ public class MainActivity extends AppCompatActivity {
         //getting the student DAO interface to perform CRUD operations
         usersDao = appDatabase.usersDao();
 
+        /* removing to implement LiveData
+
         if(usersDao.readAllUsers().isEmpty()){
             Log.d("USERS_DB_CHECK","USER DB EMPTY");
             Intent intent = new Intent(MainActivity.this,RegisterUser.class);
             startActivity(intent);
 
         }
+
+         */
+
+        //VIEWMODEL LOGIC
+
+        UserViewModel userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        userViewModel.getAllUsers().observe(this,users -> {
+            if(users.isEmpty()) {
+                Intent intent = new Intent(MainActivity.this,RegisterUser.class);
+                startActivity(intent);
+            }
+        });
 
         //---Buttons---//
         Button btnProfile = findViewById(R.id.btnProfile);
