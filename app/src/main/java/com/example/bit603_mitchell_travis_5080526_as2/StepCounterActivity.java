@@ -118,8 +118,9 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
             checkNewDate((int) totalSteps);  //Set new starting point if it is a new day
             SharedPreferences startingStepsPref = getSharedPreferences("mySteps",MODE_PRIVATE);
             int startingStep = startingStepsPref.getInt("start",0);
-            currentDailySteps = (int) totalSteps - startingStep;
-            checkGoalReached();
+            int missedSteps = startingStepsPref.getInt("real",0);
+            currentDailySteps = (int) totalSteps - (startingStep + missedSteps); //missed steps are steps counted before step counter event as
+            checkGoalReached();                                                  //it can be delayed
             circleProgress.setProgressWithAnimation(currentDailySteps, 1000L);
 
 
@@ -153,7 +154,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                         .putInt("start",total)
                         .putString("date",currentDate)
                         .putBoolean("msgShow",false)
-                        .putInt("real",stepsSinceAppStart)
+                        .putInt("real",stepsSinceAppStart) //stores the steps that were missed before step counter fires
                         .apply();
 
                currentDailySteps = stepsSinceAppStart; //so currentDaily steps shows steps before type_step_counter event
@@ -162,6 +163,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
     }
 
     //function to update real time steps when  user first opens app on a new day
+    //in the onCreate() method because step counter can be delayed
     private void newDate(){
         SharedPreferences stepPref = getSharedPreferences("mySteps",MODE_PRIVATE);
         String savedDate = stepPref.getString("date","");

@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
             if(users.isEmpty()) {
                 Intent intent = new Intent(MainActivity.this,RegisterUser.class);
                 startActivity(intent);
+            }else{
+                Log.d("USERVIEWMODEL_LENGTH",String.valueOf(users.size()));
             }
         });
 

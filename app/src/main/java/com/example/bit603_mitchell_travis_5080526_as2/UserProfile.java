@@ -16,6 +16,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.AppDatabase;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserFitness;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserFitnessDao;
+import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserFitnessViewModel;
+import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UserViewModel;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.Users;
 import com.example.bit603_mitchell_travis_5080526_as2.DataModel.UsersDao;
 
@@ -30,6 +32,12 @@ public class UserProfile extends AppCompatActivity {
     List<Users> user;
     List <UserFitness> userFitness;
     int index = -1;
+
+    //View Model
+    private UserViewModel userViewModel;
+    private UserFitnessViewModel userFitnessViewModel;
+    private Users currentUser;
+    private UserFitness currentUserFitness;
 
     boolean editing = false;
 
@@ -59,6 +67,27 @@ public class UserProfile extends AppCompatActivity {
         userFitnessDao = database.userFitnessDao();
         userFitness = userFitnessDao.readAllUserFitness();
         user = usersDao.readAllUsers();
+
+        //View model implementation
+        userViewModel = new UserViewModel(getApplication());
+        userFitnessViewModel = new UserFitnessViewModel(getApplication());
+
+        userViewModel.getAllUsers().observe(this, users -> {
+            if (!users.isEmpty()) {
+                currentUser = users.get(0); //Should only be one user
+                index = 0;
+            } else {
+                Toast.makeText(this, "No account registered", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        userFitnessViewModel.getAllUserFitness().observe(this,userFitness -> {
+            if(!userFitness.isEmpty()){
+                currentUserFitness = userFitness.get(0);
+
+            }
+        });
 
         if(!user.isEmpty()){
             index = 0;
@@ -169,7 +198,7 @@ public class UserProfile extends AppCompatActivity {
 
             //---Update User Fitness---
             userFitness.get(index).setEmail(email);
-            userFitness.get(index).setSteps(goal);
+            //userFitness.get(index).setSteps(goal);
 
 
             int result1 = usersDao.updateUsers(user.get(index));

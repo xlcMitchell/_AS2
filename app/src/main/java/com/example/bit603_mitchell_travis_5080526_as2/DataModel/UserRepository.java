@@ -20,5 +20,11 @@ public class UserRepository {
         return allUsers;
     }
 
+    public void insert(Users user){
+        AppDatabase.databaseWriteExecutor.execute(()->{
+            userDao.insertUsers(user);
+        });
+    }
+
 
 }

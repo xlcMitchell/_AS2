@@ -100,7 +100,7 @@ public class RegisterUser extends AppCompatActivity {
                     try{
                         //TODO ADD  USER FITNESS
                         Users user = new Users(email,firstName,lastName,Integer.parseInt(ageStr),gender,Integer.parseInt(goal));
-                        UserFitness userFitness = new UserFitness(date,email,Integer.parseInt(goal));
+                        UserFitness userFitness = new UserFitness(date,email,0);
                         long id = usersDao.insertUsers(user);
                         long id1 = userFitnessDao.insertUserFitness(userFitness);
                         if(id != -1 && id1 != -1){

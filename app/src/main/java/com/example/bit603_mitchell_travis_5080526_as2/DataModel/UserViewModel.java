@@ -23,5 +23,11 @@ public class UserViewModel extends AndroidViewModel {
         return allUsers;
     }
 
+    public void insertUser(Users user){
+        repository.insert(user);
+    }
+
+
+
 
 }
